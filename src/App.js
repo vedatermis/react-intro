@@ -7,12 +7,32 @@ import { Container, Row, Col } from "reactstrap";
 export default class App extends Component {
 
   state = {
-    currentCategory: ""
+    currentCategory: "",
+    products: []
+  }
+
+  componentDidMount() {
+    this.getProducts();
   }
 
   setSelectedCategory = (category) => {
     this.setState({currentCategory: category.categoryName});
+    this.getProducts(category.id);
   }
+
+  getProducts = (categoryId) => {
+    let url = "http://localhost:3000/products";
+
+    if (categoryId) {
+      url += "?categoryId=" + categoryId;
+    }
+
+    fetch(url)
+      .then(response => response.json())
+      .then(data => {
+        this.setState({ products: data });
+      });
+  };
 
   render() {
     return (
@@ -24,11 +44,14 @@ export default class App extends Component {
 
           <Row>
             <Col xs="3">
-              <CategoryList changeCategoryEvent = { this.setSelectedCategory }/>
+              <CategoryList 
+              changeCategoryEvent = { this.setSelectedCategory }
+              currentCategory = { this.state.currentCategory }
+              />
             </Col>
 
             <Col xs="9">
-              <ProductList selectedCategory = { this.state.currentCategory } />
+              <ProductList products = { this.state.products } selectedCategory = { this.state.currentCategory } />
             </Col>
           </Row>
         </Container>
