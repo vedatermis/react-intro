@@ -9,7 +9,7 @@ import {
   NavLink
 } from "reactstrap";
 
-export default class CartSummery extends Component {
+export default class CartSummary extends Component {
   renderSummary() {
     return (
       <UncontrolledDropdown nav inNavbar>
@@ -19,6 +19,7 @@ export default class CartSummery extends Component {
         <DropdownMenu right>
           {this.props.cart.map(cartItem => (
             <DropdownItem key={cartItem.product.id}>
+              <Badge onClick={() => this.props.removeFromCart(cartItem.product)} color="danger">Delete</Badge>
               {cartItem.product.productName}
               <Badge color="success">{cartItem.quantity}</Badge>
             </DropdownItem>
