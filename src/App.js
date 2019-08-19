@@ -8,19 +8,20 @@ export default class App extends Component {
 
   state = {
     currentCategory: "",
-    products: []
-  }
+    products: [],
+    cart: []
+  };
 
   componentDidMount() {
     this.getProducts();
   }
 
-  setSelectedCategory = (category) => {
-    this.setState({currentCategory: category.categoryName});
+  setSelectedCategory = category => {
+    this.setState({ currentCategory: category.categoryName });
     this.getProducts(category.id);
-  }
+  };
 
-  getProducts = (categoryId) => {
+  getProducts = categoryId => {
     let url = "http://localhost:3000/products";
 
     if (categoryId) {
@@ -34,24 +35,40 @@ export default class App extends Component {
       });
   };
 
+  addToCart = (product) => {
+    let newCart = this.state.cart;
+    var addedItem = newCart.find(c => c.product.id === product.id);
+
+    if (addedItem) {
+      addedItem.quantity += 1;
+    } else
+    {
+      newCart.push({product: product, quantity:1});
+    }
+   
+    this.setState({cart: newCart});
+  }
+
   render() {
     return (
       <div>
         <Container>
-          <Row>
-            <Navi />
-          </Row>
+          <Navi cart = {this.state.cart}/>
 
           <Row>
             <Col xs="3">
-              <CategoryList 
-              changeCategoryEvent = { this.setSelectedCategory }
-              currentCategory = { this.state.currentCategory }
+              <CategoryList
+                changeCategoryEvent={this.setSelectedCategory}
+                currentCategory={this.state.currentCategory}
               />
             </Col>
 
             <Col xs="9">
-              <ProductList products = { this.state.products } selectedCategory = { this.state.currentCategory } />
+              <ProductList
+                products={this.state.products}
+                addToCart={this.addToCart}
+                selectedCategory={this.state.currentCategory}
+              />
             </Col>
           </Row>
         </Container>
