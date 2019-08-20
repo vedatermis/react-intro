@@ -3,6 +3,10 @@ import Navi from "./Navi";
 import CategoryList from "./CategoryList";
 import ProductList from "./ProductList";
 import { Container, Row, Col } from "reactstrap";
+import alertify from "alertifyjs";
+import { Route, Switch } from "react-router-dom";
+import NotFound from "./NotFound";
+import CartList from "./CartList";
 
 export default class App extends Component {
   state = {
@@ -45,11 +49,14 @@ export default class App extends Component {
     }
 
     this.setState({ cart: newCart });
+    alertify.success(product.productName + " added to cart!");
   };
 
   removeFromCart = product => {
     let newCart = this.state.cart.filter(c => c.product.id !== product.id);
     this.setState({ cart: newCart });
+
+    alertify.error(product.productName + " removed from cart!");
   };
 
   render() {
@@ -67,11 +74,30 @@ export default class App extends Component {
             </Col>
 
             <Col xs="9">
-              <ProductList
-                products={this.state.products}
-                addToCart={this.addToCart}
-                selectedCategory={this.state.currentCategory}
-              />
+              <Switch>
+                <Route
+                  exact
+                  path="/"
+                  render={props => (
+                    <ProductList
+                      {...props}
+                      products={this.state.products}
+                      addToCart={this.addToCart}
+                      selectedCategory={this.state.currentCategory}
+                    />
+                  )}
+                />
+                <Route exact path="/cart" render = {
+                  props => (
+                    <CartList
+                      {...props}
+                      cart={this.state.cart}
+                      removeFromCart={this.removeFromCart}                      
+                    />
+                  )
+                } />
+                <Route component={NotFound} />
+              </Switch>
             </Col>
           </Row>
         </Container>
